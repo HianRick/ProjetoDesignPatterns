@@ -1,0 +1,423 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #f4f6f8;
+    color: #1f2933;
+}
+
+header {
+    background: #2563eb;
+    color: #fff;
+    padding: 24px 32px;
+}
+
+header h1 {
+    margin: 0 0 4px;
+}
+
+header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 0.9rem;
+}
+
+.tabs {
+    max-width: 760px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+    display: flex;
+    gap: 8px;
+}
+
+.tab-btn {
+    background: #e4e7eb;
+    color: #1f2933;
+    border-radius: 8px 8px 0 0;
+    padding: 10px 20px;
+}
+
+.tab-btn.active {
+    background: #2563eb;
+    color: #fff;
+}
+
+.tab-panel {
+    display: grid;
+    gap: 20px;
+}
+
+main {
+    max-width: 760px;
+    margin: 16px auto 24px;
+    padding: 0 16px;
+    display: grid;
+    gap: 20px;
+}
+
+select {
+    padding: 8px 10px;
+    border: 1px solid #cbd2d9;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: #fff;
+}
+
+.opcional {
+    font-weight: 400;
+    color: #7b8794;
+    font-size: 0.8rem;
+}
+
+.dica {
+    margin: -4px 0 4px;
+    font-size: 0.85rem;
+    color: #52606d;
+    background: #f0f5ff;
+    border-left: 3px solid #2563eb;
+    padding: 8px 10px;
+    border-radius: 0 6px 6px 0;
+}
+
+.dica code {
+    background: #e0e7ff;
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+.quick-add {
+    font-size: 0.85rem;
+}
+
+.quick-add summary {
+    cursor: pointer;
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.quick-add-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.quick-add-fields input {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* ---- Picker (campo + botão que abre modal) ---- */
+.picker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.picker-valor {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid #cbd2d9;
+    border-radius: 6px;
+    background: #f9fafb;
+    font-weight: 400;
+}
+
+.picker-valor.vazio {
+    color: #9aa5b1;
+    font-style: italic;
+}
+
+.picker .secondary {
+    white-space: nowrap;
+}
+
+/* ---- Modal ---- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 60px 16px;
+    z-index: 100;
+}
+
+.modal-overlay[hidden] {
+    display: none;
+}
+
+.modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 22px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.modal-header h3 {
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    color: #52606d;
+    font-size: 1.6rem;
+    line-height: 1;
+    padding: 0 6px;
+}
+
+.modal-close:hover {
+    background: none;
+    color: #1f2933;
+}
+
+.modal input[type="text"] {
+    width: 100%;
+}
+
+.modal-lista {
+    margin-top: 12px;
+    overflow-y: auto;
+    flex: 1;
+    border: 1px solid #e4e7eb;
+    border-radius: 8px;
+}
+
+.modal-item {
+    padding: 10px 14px;
+    border-bottom: 1px solid #eef1f4;
+    cursor: pointer;
+}
+
+.modal-item:last-child {
+    border-bottom: none;
+}
+
+.modal-item:hover {
+    background: #eff6ff;
+}
+
+.modal-item .item-titulo {
+    font-weight: 600;
+}
+
+.modal-item .item-sub {
+    font-size: 0.85rem;
+    color: #616e7c;
+}
+
+.modal-vazio {
+    padding: 16px;
+    color: #7b8794;
+    font-style: italic;
+    text-align: center;
+}
+
+.modal-quick-add {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed #cbd2d9;
+    font-size: 0.9rem;
+}
+
+.modal-quick-add strong {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.factory-callout {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: #ecfdf5;
+    border: 1px solid #6ee7b7;
+    font-size: 0.9rem;
+}
+
+.factory-callout strong {
+    color: #047857;
+}
+
+.factory-callout.informado {
+    background: #eff6ff;
+    border-color: #93c5fd;
+}
+
+.factory-callout.informado strong {
+    color: #1d4ed8;
+}
+
+.card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+form {
+    display: grid;
+    gap: 12px;
+}
+
+label {
+    display: grid;
+    gap: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+label.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+input[type="text"],
+textarea {
+    padding: 8px 10px;
+    border: 1px solid #cbd2d9;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+input:focus,
+textarea:focus {
+    outline: 2px solid #93c5fd;
+    border-color: #2563eb;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+button {
+    padding: 9px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+button.secondary {
+    background: #e4e7eb;
+    color: #1f2933;
+}
+
+button.secondary:hover {
+    background: #cbd2d9;
+}
+
+.msg {
+    margin: 8px 0 0;
+    font-size: 0.9rem;
+    min-height: 1.2em;
+}
+
+.msg.ok {
+    color: #047857;
+}
+
+.msg.erro {
+    color: #b91c1c;
+}
+
+.lista-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.livro {
+    border: 1px solid #e4e7eb;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+}
+
+.livro h3 {
+    margin: 0 0 4px;
+    font-size: 1.05rem;
+}
+
+.livro .autor {
+    color: #52606d;
+    font-size: 0.9rem;
+}
+
+.livro .descricao {
+    margin: 8px 0;
+    font-size: 0.9rem;
+}
+
+.livro .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.8rem;
+    color: #616e7c;
+}
+
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge.sim {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge.nao {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.livro-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+}
+
+.livro-actions button {
+    padding: 5px 12px;
+    font-size: 0.85rem;
+}
+
+.vazio {
+    color: #7b8794;
+    font-style: italic;
+}
