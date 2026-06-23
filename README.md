@@ -92,40 +92,181 @@ ProjetoDesignPatterns/
 ```
 
 ---
+## 5. Refatoração Arquitetural e Design Patterns Aplicados
 
-## 5. Design Patterns Aplicados
+### 5.1 Problemas Identificados na Arquitetura Inicial
 
-A regra de negócio de **empréstimos** foi refatorada para melhorar a saúde do código (coesão, responsabilidade única e baixo acoplamento). Originalmente, o `EmprestimoService` concentrava todas as etapas (validar horário, buscar livro, buscar leitor, verificar disponibilidade, alterar o livro, criar e salvar o empréstimo, processar devolução). Essa lógica foi distribuída usando dois padrões:
+Na arquitetura original, a classe `EmprestimoService` concentrava praticamente toda a lógica relacionada aos empréstimos. Ela era responsável por:
 
-### 5.1. Facade (estrutural) — `EmprestimoFacade`
+- Validar horário de funcionamento;
+- Buscar livros e leitores;
+- Verificar disponibilidade do livro;
+- Alterar status de disponibilidade do acervo;
+- Criar objetos de empréstimo;
+- Persistir empréstimos;
+- Processar devoluções;
+- Cancelar registros.
 
-Fornece ao controller **um ponto de entrada único** para o fluxo de empréstimos e esconde a coordenação entre subsistemas focados:
+Essa abordagem gerava alguns problemas arquiteturais:
+
+- **Baixa coesão**, pois uma única classe possuía diversas responsabilidades.
+- **Alto acoplamento** entre regras de negócio diferentes.
+- **Dificuldade de manutenção**, já que qualquer alteração exigia modificações em uma classe central.
+- **Menor facilidade de testes**, pois várias regras estavam misturadas em um único componente.
+- **Baixa extensibilidade**, dificultando a inclusão de novos requisitos sem aumentar ainda mais a complexidade do service.
+
+---
+
+### 5.2 Novos Requisitos Recebidos
+
+Além das funcionalidades já existentes, o sistema passou a exigir uma organização mais adequada das responsabilidades da camada de negócio, permitindo:
+
+- Separar regras específicas em componentes independentes;
+- Centralizar o fluxo de empréstimos sem expor detalhes internos ao controller;
+- Padronizar a criação de novos empréstimos;
+- Facilitar futuras alterações em regras de prazo, status e disponibilidade;
+- Melhorar a manutenção e evolução da aplicação.
+
+Para atender esses requisitos foram aplicados os padrões **Facade** e **Factory Method**.
+
+---
+
+### 5.3 Pattern Aplicado: Facade
+
+### Objetivo
+
+O padrão **Facade** foi implementado através da classe `EmprestimoFacade`, que atua como uma porta de entrada única para todas as operações relacionadas aos empréstimos.
+
+Antes da refatoração, a lógica de empréstimos estava concentrada em um único service, que realizava validações, buscas e alterações de estado. Com a facade, o controller passou a utilizar apenas métodos de alto nível:
+
+```java
+emprestimoFacade.realizarEmprestimo(dto);
+emprestimoFacade.devolver(id);
+emprestimoFacade.cancelar(id);
+```
+
+Dessa forma, o controller fica responsável apenas por receber requisições HTTP e retornar respostas, sem conhecer os detalhes da regra de negócio.
+
+### Funcionamento
+
+Ao realizar um empréstimo, a facade coordena a execução dos componentes especializados:
 
 | Componente | Responsabilidade |
 |------------|------------------|
-| `HorarioFuncionamentoPolicy` | Regra isolada: o horário atual permite empréstimo? |
-| `AcervoService` | Livro: buscar, reservar (indisponível) e devolver (disponível) |
-| `LeitorRepository` | Leitor: buscar |
-| `RegistroEmprestimoService` | Empréstimo: listar, registrar, marcar devolvido e remover |
-| `EmprestimoFacade` | Orquestra os passos acima (realizar, devolver, cancelar) |
+| HorarioFuncionamentoPolicy | Validar horário permitido para empréstimos |
+| AcervoService | Buscar livro, verificar disponibilidade, reservar e devolver |
+| LeitorRepository | Buscar leitor |
+| RegistroEmprestimoService | Registrar, listar, devolver e cancelar empréstimos |
+| EmprestimoFacade | Coordenar todo o fluxo |
 
-**Ganho:** cada subsistema tem uma única responsabilidade; o controller depende só da fachada. Uma regra de negócio nova tende a virar um novo subsistema + um passo na fachada, em vez de inchar uma classe única.
+Fluxo executado pela facade:
 
-### 5.2. Factory Method (criacional) — `EmprestimoFactory`
+1. Verifica se o horário é válido;
+2. Busca o livro solicitado;
+3. Busca o leitor;
+4. Verifica a disponibilidade do livro;
+5. Reserva o exemplar;
+6. Registra o empréstimo.
 
-Centraliza a **política de criação** de um empréstimo, tirando essa lógica do service:
+### Justificativa Técnica
 
-- Status inicial `"Emprestado"`.
-- `dataEmprestimo` padrão = hoje, quando não informada.
-- `dataDevolucao` padrão = `dataEmprestimo + 15 dias` (constante `PRAZO_PADRAO_DIAS`), quando não informada; caso o cliente informe a data, ela é respeitada.
+O padrão Facade foi escolhido porque permite:
 
-**Ganho:** "como nasce um empréstimo" passa a ter uma fonte única da verdade. O `RegistroEmprestimoService` cuida apenas da persistência, e alterar o prazo/status padrão é mudar um único lugar. A interação na aba **Empréstimos** do frontend demonstra esse comportamento (data de devolução em branco → prazo padrão de 15 dias).
+- Reduzir o acoplamento entre controller e regras de negócio;
+- Centralizar o fluxo operacional em um único ponto de acesso;
+- Esconder a complexidade dos subsistemas internos;
+- Facilitar a manutenção do sistema.
+
+Caso uma regra específica precise ser alterada futuramente, a modificação ocorre apenas no componente responsável. Por exemplo:
+
+- Alterações de horário → `HorarioFuncionamentoPolicy`;
+- Alterações de disponibilidade → `AcervoService`;
+- Alterações de criação de empréstimos → `EmprestimoFactory`.
+
+---
+
+### 5.4 Pattern Aplicado: Factory Method
+
+### Objetivo
+
+O padrão **Factory Method** foi implementado através da classe `EmprestimoFactory`, responsável por centralizar a criação de novos empréstimos.
+
+Antes da refatoração, toda a lógica de construção do objeto ficava misturada dentro do service, que acumulava duas responsabilidades:
+
+- Criar corretamente o empréstimo;
+- Persistir o empréstimo.
+
+Após a refatoração, o service apenas solicita a criação do objeto:
+
+```java
+EmprestimoEntities emprestimo =
+    EmprestimoFactory.novo(livro, leitor, dto);
+
+return emprestimoRepository.save(emprestimo);
+```
+
+### Regras Centralizadas na Factory
+
+A factory define todas as regras de criação:
+
+```java
+private static final int PRAZO_PADRAO_DIAS = 15;
+```
+
+- Status inicial: **"Emprestado"**;
+- Data de empréstimo:
+  - Utiliza a data informada no DTO;
+  - Caso não exista, utiliza a data atual.
+- Data de devolução:
+  - Utiliza a data informada no DTO;
+  - Caso não exista, calcula automaticamente adicionando 15 dias à data do empréstimo.
+
+### Justificativa Técnica
+
+O Factory Method foi utilizado para:
+
+- Centralizar a lógica de criação dos empréstimos;
+- Garantir padronização na construção dos objetos;
+- Evitar duplicação de regras;
+- Reduzir responsabilidades do service;
+- Facilitar alterações futuras.
+
+Por exemplo, caso o prazo padrão mude de 15 para 20 dias, a alteração será realizada apenas na factory, sem necessidade de modificar os serviços ou controllers.
+
+---
+
+### 5.5 Impactos Arquiteturais Percebidos
+
+Após a aplicação dos padrões, foram observados os seguintes impactos na arquitetura:
+
+### Benefícios
+
+- Maior separação de responsabilidades;
+- Redução do acoplamento entre componentes;
+- Aumento da coesão das classes;
+- Código mais organizado e legível;
+- Maior facilidade para testes unitários;
+- Facilidade para inclusão de novas regras de negócio;
+- Melhor aderência ao princípio da Responsabilidade Única (SRP).
+
+### Exemplo Prático
+
+Antes da refatoração, alterações em regras de horário, disponibilidade ou criação de empréstimos exigiam modificações diretas em um único service centralizado.
+
+Após a refatoração:
+
+- Regras de horário ficam isoladas em `HorarioFuncionamentoPolicy`;
+- Regras do acervo ficam em `AcervoService`;
+- Regras de criação ficam em `EmprestimoFactory`;
+- A coordenação do fluxo fica em `EmprestimoFacade`.
+
+Isso torna o sistema mais modular, escalável e preparado para futuras evoluções sem aumentar significativamente a complexidade do código.
 
 ---
 
 ## 6. Como Executar
 
-### Backend (porta 8080)
+## Backend (porta 8080)
 
 Requisitos: **JDK 17**.
 
@@ -138,7 +279,7 @@ cd backend
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - Console H2: `http://localhost:8080/h2-console` (JDBC URL `jdbc:h2:file:./data/meubanco`, usuário `sa`, senha em branco)
 
-### Frontend
+## Frontend
 
 Sirva os arquivos estáticos (não abra via `file://`):
 
