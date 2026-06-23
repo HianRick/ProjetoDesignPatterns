@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Subsistema responsável pelo acervo (livros) no contexto de empréstimos.
- * Centraliza a mutação de disponibilidade, que antes estava repetida no EmprestimoService.
- */
+
 @Service
 public class AcervoService {
 

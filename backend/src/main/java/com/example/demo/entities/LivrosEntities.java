@@ -14,6 +14,7 @@ public class LivrosEntities {
     private UUID id_livro;
     private String nome;
     private String autor;
+    @Column(length = 1000)
     private String descricao;
 
     @Size(max = 13)

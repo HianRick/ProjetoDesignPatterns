@@ -7,19 +7,12 @@ import com.example.demo.entities.LivrosEntities;
 
 import java.time.LocalDate;
 
-/**
- * Simple Factory (padrão criacional).
- *
- * Centraliza a política de criação de um empréstimo — status inicial e prazo
- * padrão de devolução — tirando essa regra de dentro do service. Se o DTO já
- * trouxer as datas, elas são respeitadas; caso contrário aplicam-se os padrões.
- */
+
 public class EmprestimoFactory {
 
     private static final int PRAZO_PADRAO_DIAS = 15;
 
     private EmprestimoFactory() {
-        // Fábrica de uso estático: não deve ser instanciada.
     }
 
     public static EmprestimoEntities novo(LivrosEntities livro, LeitorEntities leitor, InserirEmprestimoDTO dto) {
