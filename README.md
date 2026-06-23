@@ -111,7 +111,7 @@ Fornece ao controller **um ponto de entrada único** para o fluxo de empréstimo
 
 **Ganho:** cada subsistema tem uma única responsabilidade; o controller depende só da fachada. Uma regra de negócio nova tende a virar um novo subsistema + um passo na fachada, em vez de inchar uma classe única.
 
-### 5.2. Simple Factory (criacional) — `EmprestimoFactory`
+### 5.2. Factory Method (criacional) — `EmprestimoFactory`
 
 Centraliza a **política de criação** de um empréstimo, tirando essa lógica do service:
 
