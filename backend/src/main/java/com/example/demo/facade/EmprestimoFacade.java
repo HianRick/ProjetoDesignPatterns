@@ -15,13 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Facade (padrão estrutural) para o fluxo de empréstimos.
- *
- * Oferece ao controller um ponto de entrada simples e esconde a coordenação entre
- * os subsistemas: política de horário, acervo (livros), leitores e persistência do empréstimo.
- * Regras novas tendem a virar um novo subsistema + um passo aqui, em vez de inchar uma classe só.
- */
+
 @Component
 public class EmprestimoFacade {
 
@@ -48,7 +42,7 @@ public class EmprestimoFacade {
         return registroEmprestimoService.buscarPorId(id);
     }
 
-    // Fluxo de criação: cada passo agora é uma chamada clara a um subsistema.
+  
     public Object realizarEmprestimo(InserirEmprestimoDTO dto) {
         if (!horarioPolicy.estaDentroDoHorario(LocalDateTime.now())) {
             return "Só criamos empréstimos de segunda à sexta, das 8h às 22h";

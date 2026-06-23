@@ -5,10 +5,7 @@ import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
-/**
- * Regra de negócio isolada: define se o horário atual permite operações de empréstimo.
- * Mantida fora da fachada/serviço para poder ser testada e alterada sozinha.
- */
+
 @Component
 public class HorarioFuncionamentoPolicy {
 

@@ -50,6 +50,10 @@ header p {
     gap: 20px;
 }
 
+.tab-panel[hidden] {
+    display: none;
+}
+
 main {
     max-width: 760px;
     margin: 16px auto 24px;
@@ -111,7 +115,6 @@ select {
     min-width: 120px;
 }
 
-/* ---- Picker (campo + botão que abre modal) ---- */
 .picker {
     display: flex;
     align-items: center;
@@ -136,7 +139,7 @@ select {
     white-space: nowrap;
 }
 
-/* ---- Modal ---- */
+
 .modal-overlay {
     position: fixed;
     inset: 0;

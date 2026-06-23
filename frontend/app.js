@@ -156,13 +156,9 @@ function escapar(texto) {
 btnCancelar.addEventListener("click", resetarFormulario);
 btnRecarregar.addEventListener("click", carregarLivros);
 
-// Carrega a lista ao abrir a página
 carregarLivros();
 
 
-// =========================================================================
-//  ABAS
-// =========================================================================
 const tabBtns = document.querySelectorAll(".tab-btn");
 const tabPanels = document.querySelectorAll(".tab-panel");
 
@@ -176,15 +172,12 @@ tabBtns.forEach((btn) => {
 });
 
 
-// =========================================================================
-//  EMPRÉSTIMOS  (consome a API que usa a EmprestimoFactory)
-// =========================================================================
 const API_EMP = "http://localhost:8080/api/emprestimos";
 const API_LEITORES = "http://localhost:8080/api/leitores";
 
 const empForm = document.getElementById("emprestimo-form");
-const selLivro = document.getElementById("emp-livro");      // input hidden -> guarda o id do livro
-const selLeitor = document.getElementById("emp-leitor");    // input hidden -> guarda o id do leitor
+const selLivro = document.getElementById("emp-livro");     
+const selLeitor = document.getElementById("emp-leitor");    
 const lblLivro = document.getElementById("emp-livro-label");
 const lblLeitor = document.getElementById("emp-leitor-label");
 const inpDataEmp = document.getElementById("emp-data-emprestimo");
@@ -194,7 +187,6 @@ const empResultado = document.getElementById("emp-resultado");
 const empLista = document.getElementById("emp-lista");
 const btnRecarregarEmp = document.getElementById("btn-recarregar-emp");
 
-// Elementos dos modais
 const btnPickLivro = document.getElementById("btn-pick-livro");
 const btnPickLeitor = document.getElementById("btn-pick-leitor");
 const modalLivro = document.getElementById("modal-livro");
@@ -208,7 +200,6 @@ const novoLeitorNome = document.getElementById("novo-leitor-nome");
 const novoLeitorContato = document.getElementById("novo-leitor-contato");
 const btnAddLeitor = document.getElementById("btn-add-leitor");
 
-// Caches para filtrar localmente conforme o usuário digita
 let livrosCache = [];
 let leitoresCache = [];
 
@@ -219,7 +210,6 @@ function abrirAbaEmprestimos() {
     carregarEmprestimos();
 }
 
-// ---------- Helpers de modal ----------
 function abrirModal(modal) {
     modal.hidden = false;
 }
@@ -236,7 +226,6 @@ document.querySelectorAll("[data-close]").forEach((btn) => {
     });
 });
 
-// ---------- Modal: buscar LIVRO ----------
 btnPickLivro.addEventListener("click", async () => {
     abrirModal(modalLivro);
     buscaLivro.value = "";
@@ -285,7 +274,6 @@ function renderLivros() {
     });
 }
 
-// ---------- Modal: buscar / cadastrar LEITOR ----------
 btnPickLeitor.addEventListener("click", async () => {
     abrirModal(modalLeitor);
     buscaLeitor.value = "";
@@ -336,7 +324,6 @@ function selecionarLeitor(leitor) {
     fecharModal(modalLeitor);
 }
 
-// Cadastro rápido dentro do modal de leitor: cadastra, seleciona e fecha
 btnAddLeitor.addEventListener("click", async () => {
     const nome = novoLeitorNome.value.trim();
     if (!nome) {
@@ -369,7 +356,6 @@ function mostrarMsgModalLeitor(texto, tipo) {
     }, 3000);
 }
 
-// Limpa a seleção atual de livro/leitor (após emprestar)
 function limparSelecaoEmprestimo() {
     selLivro.value = "";
     selLeitor.value = "";
@@ -379,7 +365,6 @@ function limparSelecaoEmprestimo() {
     lblLeitor.classList.add("vazio");
 }
 
-// Realizar empréstimo
 empForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     empResultado.innerHTML = "";
@@ -387,7 +372,7 @@ empForm.addEventListener("submit", async (e) => {
     if (!selLivro.value) return mostrarMsgEmp("Selecione um livro disponível.", "erro");
     if (!selLeitor.value) return mostrarMsgEmp("Selecione (ou cadastre) um leitor.", "erro");
 
-    // dataDevolucao em branco => enviamos null e a EmprestimoFactory aplica o prazo padrão.
+
     const devolucaoInformada = inpDataDev.value !== "";
     const body = {
         idLivro: selLivro.value,
@@ -404,7 +389,6 @@ empForm.addEventListener("submit", async (e) => {
         });
 
         if (!resp.ok) {
-            // O backend devolve uma mensagem de texto nos erros de regra de negócio.
             const texto = await resp.text();
             throw new Error(texto || "HTTP " + resp.status);
         }
@@ -420,7 +404,7 @@ empForm.addEventListener("submit", async (e) => {
     }
 });
 
-// Destaca o que a EmprestimoFactory definiu para a data de devolução
+
 function mostrarCalloutFactory(emprestimo, devolucaoInformada) {
     const div = document.createElement("div");
     if (devolucaoInformada) {
@@ -436,7 +420,7 @@ function mostrarCalloutFactory(emprestimo, devolucaoInformada) {
     empResultado.appendChild(div);
 }
 
-// Lista de empréstimos
+
 async function carregarEmprestimos() {
     empLista.innerHTML = "Carregando...";
     try {
@@ -461,7 +445,7 @@ async function carregarEmprestimos() {
                 </div>
                 <div class="livro-actions">
                     ${ativo ? `<button class="secondary" data-acao="devolver">Devolver</button>` : ""}
-                    <button class="secondary" data-acao="cancelar">Cancelar</button>
+                    <button class="secondary" data-acao="cancelar">Excluir</button>
                 </div>
             `;
             const btnDev = div.querySelector('[data-acao="devolver"]');
@@ -486,14 +470,14 @@ async function devolverEmprestimo(id) {
 }
 
 async function cancelarEmprestimo(id) {
-    if (!confirm("Cancelar este empréstimo?")) return;
+    if (!confirm("Excluir este empréstimo?")) return;
     try {
         const resp = await fetch(`${API_EMP}/${id}`, { method: "DELETE" });
         if (!resp.ok && resp.status !== 204) throw new Error("HTTP " + resp.status);
-        mostrarMsgEmp("Empréstimo cancelado.", "ok");
+        mostrarMsgEmp("Empréstimo excluído.", "ok");
         carregarEmprestimos();
     } catch (err) {
-        mostrarMsgEmp("Erro ao cancelar: " + err.message, "erro");
+        mostrarMsgEmp("Erro ao excluir: " + err.message, "erro");
     }
 }
 

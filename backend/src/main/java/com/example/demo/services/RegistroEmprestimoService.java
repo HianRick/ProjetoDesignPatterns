@@ -13,10 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Subsistema responsável apenas pela persistência do empréstimo.
- * Não conhece regras de horário, disponibilidade do livro nem leitor — isso é papel da fachada.
- */
+
 @Service
 public class RegistroEmprestimoService {
 
